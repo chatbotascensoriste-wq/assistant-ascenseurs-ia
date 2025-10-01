@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assistant IA Ascenseurs - Photo</title>
+    <title>Assistant IA Ascenseurs - Photo & Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -39,36 +39,36 @@
             border-radius: 10px;
             font-size: 0.8em;
         }
-        .camera-container {
-            position: relative;
+        .photo-preview {
             max-width: 100%;
-            margin: 0 auto;
-        }
-        #cameraPreview {
-            width: 100%;
-            max-width: 400px;
-            border: 2px solid #007bff;
-            border-radius: 10px;
-        }
-        .photo-capture-buttons {
-            margin-top: 15px;
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-        .captured-photo {
-            max-width: 100%;
-            border: 2px solid #28a745;
+            height: auto;
             border-radius: 10px;
             margin-top: 10px;
         }
-        .photo-warning {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 5px;
-            padding: 10px;
-            margin: 10px 0;
-            font-size: 0.9em;
+        .camera-container {
+            position: relative;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #cameraView {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        .camera-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+        .password-toggle {
+            cursor: pointer;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
         }
     </style>
 </head>
@@ -88,9 +88,19 @@
                     <input type="email" class="form-control" id="email" placeholder="votre@email.com" required>
                 </div>
                 
-                <div class="mb-3">
+                <div class="mb-3 position-relative">
                     <label class="form-label">Mot de passe</label>
                     <input type="password" class="form-control" id="password" placeholder="Votre mot de passe" required>
+                    <span class="password-toggle" onclick="togglePassword()">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="showPassword">
+                    <label class="form-check-label" for="showPassword">
+                        Afficher le mot de passe
+                    </label>
                 </div>
                 
                 <button type="submit" class="btn btn-primary w-100 py-2">
@@ -100,7 +110,7 @@
             
             <div class="mt-3 text-center">
                 <small class="text-muted">
-                    Test: admin@ascenseurs.com / Admin2024! ou tech1@ascenseurs.com / Tech123!
+                    Test: admin@ascenseurs.com / Admin2024!
                 </small>
             </div>
         </div>
@@ -143,12 +153,11 @@
                             <button class="list-group-item list-group-item-action" onclick="showSection('diagnostic')">
                                 <i class="fas fa-stethoscope"></i> Diagnostic
                             </button>
+                            <button class="list-group-item list-group-item-action" id="photoNavBtn" style="display:none;" onclick="showSection('photo')">
+                                <i class="fas fa-camera"></i> Analyse Photo
+                            </button>
                             <button class="list-group-item list-group-item-action" id="adminNavBtn" style="display:none;" onclick="showSection('admin')">
                                 <i class="fas fa-crown"></i> Administration
-                            </button>
-                            <!-- Option photo uniquement pour techniciens -->
-                            <button class="list-group-item list-group-item-action" id="photoNavBtn" style="display:none;" onclick="showSection('photo')">
-                                <i class="fas fa-camera"></i> Capture Photo
                             </button>
                         </div>
                     </div>
@@ -189,9 +198,18 @@
                         <label class="form-label">Email</label>
                         <input type="email" class="form-control" id="newTechEmail" placeholder="technicien@ascenseurs.com">
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3 position-relative">
                         <label class="form-label">Mot de passe</label>
                         <input type="password" class="form-control" id="newTechPassword" placeholder="Mot de passe">
+                        <span class="password-toggle" onclick="toggleNewTechPassword()">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="showNewTechPassword">
+                        <label class="form-check-label" for="showNewTechPassword">
+                            Afficher le mot de passe
+                        </label>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -306,7 +324,8 @@
 
         let currentUser = null;
         let DIAGNOSTICS = JSON.parse(localStorage.getItem('ascenseurs_diagnostics')) || [];
-        let currentPhoto = null; // Photo temporaire
+        let currentPhoto = null;
+        let cameraStream = null;
 
         // Sauvegarder les données
         function saveData() {
@@ -314,6 +333,48 @@
             localStorage.setItem('ascenseurs_documents', JSON.stringify(DOCUMENTS));
             localStorage.setItem('ascenseurs_diagnostics', JSON.stringify(DIAGNOSTICS));
         }
+
+        // Fonction pour afficher/masquer le mot de passe
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const icon = document.querySelector('.password-toggle i');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                passwordField.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        function toggleNewTechPassword() {
+            const passwordField = document.getElementById('newTechPassword');
+            const icon = document.querySelector('#addTechModal .password-toggle i');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                passwordField.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        // Gestion de la checkbox
+        document.addEventListener('DOMContentLoaded', function() {
+            // Checkbox connexion
+            document.getElementById('showPassword').addEventListener('change', function() {
+                const passwordField = document.getElementById('password');
+                passwordField.type = this.checked ? 'text' : 'password';
+            });
+
+            // Checkbox modal technicien
+            document.getElementById('showNewTechPassword')?.addEventListener('change', function() {
+                const passwordField = document.getElementById('newTechPassword');
+                passwordField.type = this.checked ? 'text' : 'password';
+            });
+        });
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
@@ -340,14 +401,13 @@
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('appInterface').style.display = 'block';
             
-            // Afficher/masquer bouton admin
+            // Afficher/masquer boutons selon le rôle
             if (currentUser.role === 'admin') {
                 document.getElementById('adminNavBtn').style.display = 'block';
                 document.getElementById('userBadge').innerHTML = '<span class="admin-badge">👑 ADMIN</span>';
-                document.getElementById('photoNavBtn').style.display = 'none'; // Pas de photo pour admin
             } else {
+                document.getElementById('photoNavBtn').style.display = 'block';
                 document.getElementById('userBadge').innerHTML = '<span class="tech-badge">🔧 TECHNICIEN</span>';
-                document.getElementById('photoNavBtn').style.display = 'block'; // Photo pour techniciens
             }
             
             // Afficher infos utilisateur
@@ -361,6 +421,11 @@
 
         function showSection(section) {
             const contentArea = document.getElementById('contentArea');
+            
+            // Arrêter la caméra si elle est active
+            if (cameraStream && section !== 'photo') {
+                stopCamera();
+            }
             
             // Mettre à jour les boutons actifs
             document.querySelectorAll('.list-group-item').forEach(btn => {
@@ -380,14 +445,16 @@
                 case 'diagnostic':
                     html = getDiagnosticContent();
                     break;
-                case 'admin':
-                    if(currentUser.role === 'admin') {
-                        html = getAdminContent();
-                    }
-                    break;
                 case 'photo':
                     if(currentUser.role === 'technicien') {
                         html = getPhotoContent();
+                        // Démarrer la caméra automatiquement
+                        setTimeout(() => initCamera(), 500);
+                    }
+                    break;
+                case 'admin':
+                    if(currentUser.role === 'admin') {
+                        html = getAdminContent();
                     }
                     break;
             }
@@ -440,7 +507,7 @@
                                     <div class="card-body">
                                         <i class="fas fa-camera fa-2x text-success"></i>
                                         <h5 class="mt-2">Photo</h5>
-                                        <p>Outils tech</p>
+                                        <p>Analyse IA</p>
                                     </div>
                                 </div>
                             </div>
@@ -515,19 +582,6 @@
                                 <option value="Schindler">Schindler</option>
                             </select>
                         </div>
-
-                        ${currentUser.role === 'technicien' ? `
-                        <div class="mb-3">
-                            <label class="form-label">Photo de l'équipement (optionnel)</label>
-                            <div class="photo-warning">
-                                <small><i class="fas fa-info-circle"></i> Les photos ne sont pas sauvegardées et seront supprimées à la fermeture de la session</small>
-                            </div>
-                            <div id="currentPhotoPreview"></div>
-                            <button class="btn btn-info btn-sm mt-2" onclick="showSection('photo')">
-                                <i class="fas fa-camera"></i> Prendre une photo
-                            </button>
-                        </div>
-                        ` : ''}
                         
                         <button class="btn btn-warning w-100" onclick="analyserPanne()">
                             <i class="fas fa-robot"></i> Analyser avec l'IA
@@ -543,59 +597,38 @@
             return `
                 <div class="card">
                     <div class="card-header bg-info text-white">
-                        <h4><i class="fas fa-camera"></i> Capture Photo - Technicien</h4>
+                        <h4><i class="fas fa-camera"></i> Analyse Photo - Technicien</h4>
                     </div>
                     <div class="card-body">
-                        <div class="photo-warning">
-                            <i class="fas fa-exclamation-triangle"></i> 
-                            <strong>Attention :</strong> Les photos ne sont PAS sauvegardées et seront perdues à la fermeture de l'application. 
-                            Utilisez-les uniquement pour l'analyse immédiate.
+                        <div class="alert alert-warning">
+                            <h6><i class="fas fa-info-circle"></i> Utilisation de l'appareil photo</h6>
+                            <p class="mb-2">Prenez une photo de :</p>
+                            <ul class="mb-0">
+                                <li>Schémas électriques</li>
+                                <li>Armoires de commande</li>
+                                <li>Plaques signalétiques</li>
+                                <li>Composants suspects</li>
+                            </ul>
                         </div>
-
-                        <div class="camera-container text-center">
-                            <div class="mb-3">
-                                <select class="form-select" id="photoType">
-                                    <option value="armoire">Armoire électrique</option>
-                                    <option value="schema">Schéma technique</option>
-                                    <option value="tube">Tube de manœuvre</option>
-                                    <option value="composant">Composant défectueux</option>
-                                    <option value="autre">Autre équipement</option>
-                                </select>
-                            </div>
-
-                            <video id="cameraPreview" autoplay playsinline></video>
-                            
-                            <div class="photo-capture-buttons">
-                                <button class="btn btn-success" onclick="capturePhoto()" id="captureBtn">
-                                    <i class="fas fa-camera"></i> Prendre la photo
-                                </button>
-                                <button class="btn btn-secondary" onclick="stopCamera()">
-                                    <i class="fas fa-stop"></i> Arrêter caméra
+                        
+                        <div class="camera-container mb-3">
+                            <video id="cameraView" autoplay playsinline></video>
+                            <div class="camera-controls">
+                                <button class="btn btn-success btn-lg" onclick="takePhoto()">
+                                    <i class="fas fa-camera"></i> Prendre une photo
                                 </button>
                             </div>
-
-                            <div id="capturedPhotoContainer" class="mt-3" style="display: none;">
-                                <h6>Photo capturée :</h6>
-                                <img id="capturedPhoto" class="captured-photo">
-                                <div class="mt-2">
-                                    <button class="btn btn-primary btn-sm" onclick="useThisPhoto()">
-                                        <i class="fas fa-check"></i> Utiliser cette photo
-                                    </button>
-                                    <button class="btn btn-danger btn-sm" onclick="retakePhoto()">
-                                        <i class="fas fa-redo"></i> Reprendre
-                                    </button>
-                                    <button class="btn btn-warning btn-sm" onclick="analyzePhoto()">
-                                        <i class="fas fa-search"></i> Analyser la photo
-                                    </button>
-                                </div>
-                            </div>
                         </div>
-
-                        <div class="mt-4">
-                            <h5>Dernières photos (temporaires) :</h5>
-                            <div id="recentPhotos" class="d-flex flex-wrap gap-2">
-                                <!-- Les photos récentes apparaîtront ici -->
-                            </div>
+                        
+                        <div id="photoResult" class="mt-3"></div>
+                        
+                        <div class="mt-3">
+                            <button class="btn btn-outline-secondary btn-sm" onclick="stopCamera()">
+                                <i class="fas fa-stop"></i> Arrêter la caméra
+                            </button>
+                            <button class="btn btn-outline-info btn-sm ms-2" onclick="initCamera()">
+                                <i class="fas fa-sync"></i> Redémarrer
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -656,7 +689,7 @@
                                         <p><strong>Diagnostics:</strong> ${DIAGNOSTICS.length}</p>
                                         <hr>
                                         <p class="text-success"><strong>IA Active:</strong> ✅ Opérationnelle</p>
-                                        <p class="text-info"><strong>Module Photo:</strong> ✅ Techniciens uniquement</p>
+                                        <p class="text-info"><strong>Module Photo:</strong> ✅ Disponible techniciens</p>
                                     </div>
                                 </div>
                             </div>
@@ -666,25 +699,32 @@
             `;
         }
 
-        // === FONCTIONS CAMÉRA ET PHOTO ===
-        let cameraStream = null;
-        let capturedPhotoData = null;
+        // === FONCTIONS APPAREIL PHOTO ===
 
-        function startCamera() {
-            const video = document.getElementById('cameraPreview');
-            
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia({ video: true })
-                    .then(function(stream) {
-                        cameraStream = stream;
-                        video.srcObject = stream;
-                    })
-                    .catch(function(error) {
-                        console.error("Erreur caméra:", error);
-                        alert("Impossible d'accéder à la caméra. Vérifiez les permissions.");
-                    });
-            } else {
-                alert("Votre navigateur ne supporte pas l'accès à la caméra.");
+        async function initCamera() {
+            try {
+                stopCamera(); // Arrêter d'abord si déjà en cours
+                
+                const video = document.getElementById('cameraView');
+                cameraStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'environment', // Caméra arrière
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                });
+                
+                video.srcObject = cameraStream;
+                document.getElementById('photoResult').innerHTML = '';
+                
+            } catch (error) {
+                console.error('Erreur caméra:', error);
+                document.getElementById('photoResult').innerHTML = `
+                    <div class="alert alert-danger">
+                        <h6><i class="fas fa-exclamation-triangle"></i> Erreur caméra</h6>
+                        <p class="mb-0">Impossible d'accéder à la caméra. Vérifiez les permissions.</p>
+                    </div>
+                `;
             }
         }
 
@@ -693,12 +733,14 @@
                 cameraStream.getTracks().forEach(track => track.stop());
                 cameraStream = null;
             }
-            const video = document.getElementById('cameraPreview');
-            video.srcObject = null;
+            const video = document.getElementById('cameraView');
+            if (video) {
+                video.srcObject = null;
+            }
         }
 
-        function capturePhoto() {
-            const video = document.getElementById('cameraPreview');
+        function takePhoto() {
+            const video = document.getElementById('cameraView');
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
             
@@ -706,133 +748,61 @@
             canvas.height = video.videoHeight;
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             
-            capturedPhotoData = canvas.toDataURL('image/jpeg');
+            currentPhoto = canvas.toDataURL('image/jpeg');
             
-            // Afficher la photo capturée
-            document.getElementById('capturedPhoto').src = capturedPhotoData;
-            document.getElementById('capturedPhotoContainer').style.display = 'block';
-            
-            // Arrêter la caméra après capture
-            stopCamera();
-        }
-
-        function useThisPhoto() {
-            if (capturedPhotoData) {
-                currentPhoto = capturedPhotoData;
-                
-                // Mettre à jour l'aperçu dans la section diagnostic
-                const photoPreview = document.getElementById('currentPhotoPreview');
-                if (photoPreview) {
-                    photoPreview.innerHTML = `
-                        <img src="${capturedPhotoData}" class="captured-photo" style="max-width: 200px;">
-                        <div class="mt-1">
-                            <small class="text-success">Photo ajoutée au diagnostic</small>
-                            <button class="btn btn-sm btn-outline-danger ms-2" onclick="removePhoto()">
-                                <i class="fas fa-times"></i>
-                            </button>
+            // Afficher la photo et l'analyse
+            document.getElementById('photoResult').innerHTML = `
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-check-circle"></i> Photo capturée</h5>
+                    </div>
+                    <div class="card-body">
+                        <img src="${currentPhoto}" class="photo-preview" alt="Photo capturée">
+                        <div class="mt-3">
+                            <div class="alert alert-info">
+                                <i class="fas fa-spinner fa-spin"></i> L'IA analyse la photo...
+                            </div>
                         </div>
-                    `;
-                }
-                
-                // Ajouter aux photos récentes
-                addToRecentPhotos(capturedPhotoData);
-                
-                alert("✅ Photo ajoutée au diagnostic actuel !");
-                showSection('diagnostic');
-            }
-        }
-
-        function retakePhoto() {
-            capturedPhotoData = null;
-            document.getElementById('capturedPhotoContainer').style.display = 'none';
-            startCamera();
+                    </div>
+                </div>
+            `;
+            
+            // Simulation analyse IA de la photo
+            setTimeout(() => {
+                analyzePhoto();
+            }, 3000);
         }
 
         function analyzePhoto() {
-            if (!capturedPhotoData) {
-                alert("Aucune photo à analyser");
-                return;
-            }
+            const analyses = [
+                "🔄 Analyse des composants électroniques... Schéma détecté : armoire de commande principale",
+                "📊 Identification des connecteurs... Système de sécurité Kone reconnu",
+                "🔍 Détection des câblages... Vérifiez les connexions du module de puissance",
+                "⚡ Analyse électrique... Contrôlez les fusibles et relais principaux"
+            ];
             
-            const photoType = document.getElementById('photoType').value;
-            let analysis = "";
+            const randomAnalysis = analyses[Math.floor(Math.random() * analyses.length)];
             
-            switch(photoType) {
-                case 'armoire':
-                    analysis = "🔍 Analyse de l'armoire électrique : Vérifiez les contacteurs, relais et fusibles. Contrôlez la tension d'alimentation.";
-                    break;
-                case 'schema':
-                    analysis = "🔍 Analyse du schéma : Recherche des composants critiques. Vérifiez les connections et les repères techniques.";
-                    break;
-                case 'tube':
-                    analysis = "🔍 Analyse du tube de manœuvre : Inspection des connections et de l'état général. Vérifiez l'étanchéité.";
-                    break;
-                case 'composant':
-                    analysis = "🔍 Analyse du composant : Identification en cours. Comparez avec les références techniques disponibles.";
-                    break;
-                default:
-                    analysis = "🔍 Analyse générale : L'IA examine l'image pour identifier les éléments techniques pertinents.";
-            }
+            document.querySelector('#photoResult .alert').innerHTML = `
+                <h6><i class="fas fa-brain"></i> Analyse IA Terminée</h6>
+                <p class="mb-2"><strong>Résultat :</strong> ${randomAnalysis}</p>
+                <p class="mb-0"><small>La photo sera automatiquement supprimée après utilisation</small></p>
+            `;
             
-            alert(`🧠 ANALYSE IA PHOTO :\n\n${analysis}\n\nLa photo sera utilisée pour améliorer le diagnostic.`);
-        }
-
-        function removePhoto() {
-            currentPhoto = null;
-            const photoPreview = document.getElementById('currentPhotoPreview');
-            if (photoPreview) {
-                photoPreview.innerHTML = '';
-            }
-        }
-
-        function addToRecentPhotos(photoData) {
-            const recentPhotos = document.getElementById('recentPhotos');
-            if (recentPhotos) {
-                const photoId = 'photo_' + Date.now();
-                const photoElement = `
-                    <div class="position-relative">
-                        <img src="${photoData}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">
-                        <button class="btn btn-sm btn-danger position-absolute top-0 end-0" onclick="deleteRecentPhoto('${photoId}')" style="transform: translate(30%, -30%);">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                `;
-                recentPhotos.innerHTML = photoElement + recentPhotos.innerHTML;
-                
-                // Limiter à 6 photos maximum
-                const photos = recentPhotos.querySelectorAll('div');
-                if (photos.length > 6) {
-                    photos[photos.length - 1].remove();
+            document.querySelector('#photoResult .alert').className = 'alert alert-success';
+            
+            // Supprimer automatiquement la photo après 2 minutes
+            setTimeout(() => {
+                if (document.getElementById('photoResult')) {
+                    currentPhoto = null;
+                    document.getElementById('photoResult').innerHTML = `
+                        <div class="alert alert-warning">
+                            <i class="fas fa-trash"></i> Photo supprimée automatiquement
+                        </div>
+                    `;
                 }
-            }
+            }, 120000); // 2 minutes
         }
-
-        function deleteRecentPhoto(photoId) {
-            const element = document.querySelector(`[onclick="deleteRecentPhoto('${photoId}')"]`).parentElement;
-            if (element) {
-                element.remove();
-            }
-        }
-
-        // Démarrer la caméra quand on arrive sur la section photo
-        document.addEventListener('DOMContentLoaded', function() {
-            // Redémarrer la caméra quand on montre la section photo
-            const observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    if (mutation.type === 'childList') {
-                        const contentArea = document.getElementById('contentArea');
-                        if (contentArea.innerHTML.includes('Capture Photo - Technicien')) {
-                            setTimeout(startCamera, 500);
-                        }
-                    }
-                });
-            });
-            
-            observer.observe(document.getElementById('contentArea'), {
-                childList: true,
-                subtree: true
-            });
-        });
 
         // === FONCTIONS ADMIN ===
 
@@ -942,7 +912,6 @@
             resultat.innerHTML = `
                 <div class="alert alert-info">
                     <i class="fas fa-spinner fa-spin"></i> L'IA analyse le problème en consultant sa base de connaissances...
-                    ${currentPhoto ? '<div class="mt-2"><i class="fas fa-camera"></i> Photo incluse dans l\'analyse</div>' : ''}
                 </div>
             `;
             
@@ -955,11 +924,6 @@
                     solution = `Basé sur ${relevantDocs.length} document(s) ${brand}, vérifiez : capteurs de porte, alimentation électrique, et consultez le manuel technique.`;
                 }
                 
-                // Si photo disponible, améliorer l'analyse
-                if (currentPhoto) {
-                    solution += " 📸 L'analyse de la photo confirme l'importance de vérifier les connections visibles.";
-                }
-                
                 // Enregistrer le diagnostic
                 const diagnostic = {
                     id: Date.now(),
@@ -968,8 +932,7 @@
                     brand: brand,
                     technicien: currentUser.name,
                     date: new Date().toLocaleString(),
-                    resolved: false,
-                    hasPhoto: !!currentPhoto
+                    resolved: false
                 };
                 
                 DIAGNOSTICS.push(diagnostic);
@@ -979,7 +942,6 @@
                     <div class="card border-success">
                         <div class="card-header bg-success text-white">
                             <h5><i class="fas fa-check-circle"></i> Diagnostic IA Terminé</h5>
-                            ${currentPhoto ? '<span class="badge bg-info">📸 Photo analysée</span>' : ''}
                         </div>
                         <div class="card-body">
                             <p><strong>Problème analysé:</strong> ${problem.substring(0, 100)}...</p>
@@ -998,12 +960,6 @@
                         </div>
                     </div>
                 `;
-                
-                // Réinitialiser la photo après utilisation
-                currentPhoto = null;
-                const photoPreview = document.getElementById('currentPhotoPreview');
-                if (photoPreview) photoPreview.innerHTML = '';
-                
             }, 3000);
         }
 
@@ -1032,16 +988,12 @@
         function logout() {
             // Arrêter la caméra avant de se déconnecter
             stopCamera();
-            // Supprimer les photos temporaires
-            currentPhoto = null;
-            capturedPhotoData = null;
-            
             if(confirm('Se déconnecter ?')) {
                 location.reload();
             }
         }
 
-        console.log("✅ Application avec module photo chargée !");
+        console.log("✅ Application Photo & Admin IA chargée !");
     </script>
 </body>
 </html>
