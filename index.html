@@ -1,3 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistant IA Ascenseurs Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        
+        .login-screen {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .brand-side {
+            background: var(--primary);
+            color: white;
+            padding: 40px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .ai-badge {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .app-interface {
+            display: none;
+        }
+        
+        .nav-brand {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .document-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: white;
+            transition: transform 0.2s;
+        }
+        
+        .document-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .chat-message {
+            padding: 10px 15px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            max-width: 80%;
+        }
+        
+        .user-message {
+            background: var(--secondary);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .bot-message {
+            background: #f8f9fa;
+            color: #333;
+            border-bottom-left-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Écran de connexion -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <div class="row g-0">
+                <!-- Côté marque -->
+                <div class="col-md-4 brand-side">
+                    <div class="text-center">
+                        <i class="fas fa-robot fa-4x mb-3"></i>
+                        <h3>Assistant IA</h3>
+                        <h4>Ascenseurs Pro</h4>
+                        <div class="ai-badge">IA Évolutive • V2.1</div>
+                        <p class="mt-3 small">Kone • Thyssen • Otis • Schindler</p>
+                    </div>
+                </div>
+                
+                <!-- Côté connexion -->
+                <div class="col-md-8">
+                    <div class="card-body p-4 p-md-5">
+                        <h3 class="text-center mb-4">Connexion Sécurisée</h3>
+                        
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label class="form-label">Email professionnel</label>
+                                <input type="email" class="form-control" id="email" 
+                                       placeholder="admin@ascenseurs.com" required>
+                                <div class="form-text">Essayer: admin@ascenseurs.com / Admin2024!</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Mot de passe</label>
+                                <input type="password" class="form-control" id="password" 
+                                       placeholder="Votre mot de passe" required>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+                                <i class="fas fa-lock"></i> Accéder à la plateforme
+                            </button>
+                            
+                            <div class="text-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-shield-alt"></i> 
+                                    Accès réservé au personnel autorisé
+                                </small>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interface principale -->
+    <div class="app-interface" id="appInterface">
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <span class="navbar-brand">
+                    <i class="fas fa-robot"></i> 
+                    <span class="nav-brand">Assistant IA Ascenseurs</span>
+                    <small class="ms-2 text-light" id="userRoleBadge"></small>
+                </span>
+                <div class="navbar-nav ms-auto">
+                    <span class="nav-text text-light me-3 d-none d-md-inline">
+                        <i class="fas fa-circle text-success"></i> IA Active
+                    </span>
+                    <button class="btn btn-outline-light btn-sm" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Déconnexion
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Contenu principal -->
+        <div class="container-fluid mt-3">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-lg-2 col-md-3 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <i class="fas fa-tachometer-alt"></i> Navigation
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <button class="list-group-item list-group-item-action active" onclick="showSection('accueil')">
+                                <i class="fas fa-home"></i> Accueil
+                            </button>
+                            <button class="list-group-item list-group-item-action" onclick="showSection('documents')">
+                                <i class="fas fa-folder"></i> Documents
+                            </button>
+                            <button class="list-group-item list-group-item-action" onclick="showSection('diagnostic')">
+                                <i class="fas fa-stethoscope"></i> Diagnostic IA
+                            </button>
+                            <button class="list-group-item list-group-item-action" onclick="showSection('historique')">
+                                <i class="fas fa-history"></i> Historique
+                            </button>
+                            <button class="list-group-item list-group-item-action d-none" id="adminNavButton" onclick="showSection('admin')">
+                                <i class="fas fa-crown"></i> Administration
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Statut IA -->
+                    <div class="card mt-3">
+                        <div class="card-header bg-success text-white">
+                            <i class="fas fa-brain"></i> Statut IA
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between small">
+                                <span>Apprentissage:</span>
+                                <span class="badge bg-success">Actif</span>
+                            </div>
+                            <div class="progress mt-2" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 78%"></div>
+                            </div>
+                            <small class="text-muted d-block mt-1">78% de précision</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contenu dynamique -->
+                <div class="col-lg-10 col-md-9">
+                    <div id="contentArea">
+                        <!-- Le contenu change ici -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Upload Document -->
+    <div class="modal fade" id="uploadModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-upload"></i> Ajouter un document</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Marque</label>
+                        <select class="form-select" id="docBrand">
+                            <option value="Kone">Kone</option>
+                            <option value="Thyssen">Thyssen</option>
+                            <option value="Otis">Otis</option>
+                            <option value="Schindler">Schindler</option>
+                            <option value="Sodimas">Sodimas</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Type de document</label>
+                        <select class="form-select" id="docType">
+                            <option value="manuel_technique">Manuel technique</option>
+                            <option value="schema_electrique">Schéma électrique</option>
+                            <option value="guide_depannage">Guide de dépannage</option>
+                            <option value="notice_installation">Notice d'installation</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fichier</label>
+                        <input type="file" class="form-control" id="fileInput" accept=".pdf,.doc,.docx,.jpg,.png">
+                        <div class="form-text">Formats supportés: PDF, DOC, DOCX, JPG, PNG</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="uploadDocument()">
+                        <i class="fas fa-upload"></i> Uploader
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="config.js"></script>
+    <script src="ai-engine.js"></script>
+    
     <script>
         // === GESTION DE L'APPLICATION ===
         const USERS = [
@@ -25,50 +302,35 @@
         ];
 
         let currentUser = null;
+        let documents = JSON.parse(localStorage.getItem('ascenseurs_documents')) || [];
+        let diagnostics = JSON.parse(localStorage.getItem('ascenseurs_diagnostics')) || [];
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("🚀 Application initialisée");
-            
             // Événement de connexion
             document.getElementById('loginForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const email = document.getElementById('email').value.trim();
                 const password = document.getElementById('password').value;
-                console.log("Tentative de connexion:", email);
 
                 const user = USERS.find(u => u.email === email && u.password === password);
                 
                 if (user) {
-                    console.log("✅ Connexion réussie:", user.name);
                     currentUser = user;
-                    window.currentUser = user;
+                    window.currentUser = user; // Pour les autres scripts
                     showAppInterface();
                 } else {
-                    console.log("❌ Échec connexion");
                     alert('❌ Email ou mot de passe incorrect');
                 }
             });
 
-            // Vérifier si déjà connecté
-            checkExistingSession();
+            // Charger les données existantes
+            loadInitialData();
         });
 
-        function checkExistingSession() {
-            const savedUser = localStorage.getItem('currentUser');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                showAppInterface();
-            }
-        }
-
         function showAppInterface() {
-            console.log("📱 Affichage interface principale");
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('appInterface').style.display = 'block';
-            
-            // Sauvegarder la session
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
             
             // Afficher le bouton admin si nécessaire
             if (currentUser.role === 'admin') {
@@ -82,7 +344,6 @@
         }
 
         function showSection(section) {
-            console.log("📂 Chargement section:", section);
             const contentArea = document.getElementById('contentArea');
             
             // Mettre à jour les boutons actifs
@@ -91,82 +352,93 @@
             });
             event.target.classList.add('active');
             
-            let content = '';
             switch(section) {
                 case 'accueil':
-                    content = getHomeContent();
+                    contentArea.innerHTML = getHomeContent();
                     break;
                 case 'documents':
-                    content = getDocumentsContent();
+                    contentArea.innerHTML = getDocumentsContent();
                     break;
                 case 'diagnostic':
-                    content = getDiagnosticContent();
+                    contentArea.innerHTML = getDiagnosticContent();
                     break;
                 case 'historique':
-                    content = getHistoryContent();
+                    contentArea.innerHTML = getHistoryContent();
                     break;
                 case 'admin':
                     if(currentUser.role === 'admin') {
-                        content = getAdminContent();
+                        contentArea.innerHTML = getAdminContent();
                     }
                     break;
-                default:
-                    content = getHomeContent();
             }
-            
-            contentArea.innerHTML = content;
         }
 
         function getHomeContent() {
+            const stats = window.aiEngine ? window.aiEngine.getStats() : { knowledgeBaseSize: 3, accuracyPercentage: 78 };
+            
             return `
                 <div class="card">
                     <div class="card-header bg-info text-white">
-                        <h4><i class="fas fa-home"></i> Tableau de Bord</h4>
+                        <h4><i class="fas fa-home"></i> Tableau de Bord - Assistant IA Évolutif</h4>
                     </div>
                     <div class="card-body">
                         <div class="alert alert-success">
-                            <h5>Bienvenue ${currentUser.name} !</h5>
-                            <p>Votre assistant IA pour le dépannage d'ascenseurs est opérationnel.</p>
+                            <h5><i class="fas fa-brain"></i> IA Active et Apprenante</h5>
+                            <p>Bienvenue ${currentUser.name} ! Votre assistant IA analyse les pannes et améliore ses diagnostics après chaque intervention.</p>
                         </div>
                         
                         <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <div class="card text-center bg-primary text-white">
+                            <div class="col-md-3 mb-3">
+                                <div class="card text-center">
                                     <div class="card-body">
-                                        <i class="fas fa-robot fa-2x mb-2"></i>
-                                        <h5>IA Active</h5>
-                                        <p>Prête à analyser</p>
+                                        <i class="fas fa-file-pdf fa-2x text-danger"></i>
+                                        <h5 class="mt-2">${documents.length}</h5>
+                                        <p class="mb-0">Documents techniques</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 mb-3">
-                                <div class="card text-center bg-success text-white">
+                            <div class="col-md-3 mb-3">
+                                <div class="card text-center">
                                     <div class="card-body">
-                                        <i class="fas fa-folder fa-2x mb-2"></i>
-                                        <h5>Documents</h5>
-                                        <p>Gestion par marque</p>
+                                        <i class="fas fa-stethoscope fa-2x text-primary"></i>
+                                        <h5 class="mt-2">${diagnostics.length}</h5>
+                                        <p class="mb-0">Diagnostics effectués</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 mb-3">
-                                <div class="card text-center bg-warning text-dark">
+                            <div class="col-md-3 mb-3">
+                                <div class="card text-center">
                                     <div class="card-body">
-                                        <i class="fas fa-stethoscope fa-2x mb-2"></i>
-                                        <h5>Diagnostics</h5>
-                                        <p>Analyse intelligente</p>
+                                        <i class="fas fa-database fa-2x text-warning"></i>
+                                        <h5 class="mt-2">${stats.knowledgeBaseSize}</h5>
+                                        <p class="mb-0">Connaissances IA</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <i class="fas fa-chart-line fa-2x text-success"></i>
+                                        <h5 class="mt-2">${stats.accuracyPercentage}%</h5>
+                                        <p class="mb-0">Précision IA</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="mt-4">
-                            <h5>Démarrer maintenant :</h5>
+                            <h5>Actions rapides</h5>
                             <button class="btn btn-primary me-2" onclick="showSection('diagnostic')">
                                 <i class="fas fa-stethoscope"></i> Nouveau diagnostic
                             </button>
                             <button class="btn btn-success me-2" onclick="showSection('documents')">
-                                <i class="fas fa-folder-plus"></i> Gérer les documents
+                                <i class="fas fa-folder-plus"></i> Ajouter un document
                             </button>
+                            ${currentUser.role === 'admin' ? `
+                            <button class="btn btn-warning" onclick="showSection('admin')">
+                                <i class="fas fa-cog"></i> Administration
+                            </button>
+                            ` : ''}
                         </div>
                     </div>
                 </div>
@@ -174,48 +446,59 @@
         }
 
         function getDocumentsContent() {
+            const brands = ['Kone', 'Thyssen', 'Otis', 'Schindler', 'Sodimas', 'Autre'];
+            let documentsHTML = '';
+            
+            if (documents.length === 0) {
+                documentsHTML = '<div class="alert alert-info">Aucun document uploadé pour le moment.</div>';
+            } else {
+                documentsHTML = documents.map(doc => `
+                    <div class="document-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">${doc.name || 'Document sans nom'}</h6>
+                                <span class="badge bg-primary">${doc.brand}</span>
+                                <span class="badge bg-secondary">${doc.type}</span>
+                                <small class="d-block text-muted mt-1">Ajouté le ${new Date(doc.date).toLocaleDateString()}</small>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteDocument(${doc.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
             return `
                 <div class="card">
-                    <div class="card-header bg-warning text-dark">
-                        <h4><i class="fas fa-folder"></i> Documents Techniques</h4>
+                    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="fas fa-folder"></i> Gestion des Documents Techniques</h4>
+                        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                            <i class="fas fa-upload"></i> Nouveau document
+                        </button>
                     </div>
                     <div class="card-body">
-                        <div class="mb-4">
-                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#uploadModal">
-                                <i class="fas fa-upload"></i> Ajouter un document
-                            </button>
-                        </div>
-                        
-                        <div class="alert alert-info">
-                            <h6>Marques supportées :</h6>
-                            <p>Kone • Thyssen • Otis • Schindler • Sodimas</p>
-                        </div>
-                        
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h6>Kone</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <p>Manuels et schémas techniques Kone</p>
-                                        <button class="btn btn-sm btn-outline-primary">
-                                            Voir les documents
+                            <div class="col-md-3">
+                                <div class="list-group">
+                                    <button class="list-group-item list-group-item-action active" onclick="filterDocuments('all')">
+                                        Tous les documents
+                                    </button>
+                                    ${brands.map(brand => `
+                                        <button class="list-group-item list-group-item-action" onclick="filterDocuments('${brand}')">
+                                            ${brand}
                                         </button>
-                                    </div>
+                                    `).join('')}
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h6>Thyssen</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <p>Documentation technique Thyssen</p>
-                                        <button class="btn btn-sm btn-outline-primary">
-                                            Voir les documents
-                                        </button>
-                                    </div>
+                            <div class="col-md-9">
+                                <div id="documentsList">
+                                    ${documentsHTML}
                                 </div>
                             </div>
                         </div>
@@ -228,46 +511,82 @@
             return `
                 <div class="card">
                     <div class="card-header bg-primary text-white">
-                        <h4><i class="fas fa-stethoscope"></i> Diagnostic IA</h4>
+                        <h4><i class="fas fa-stethoscope"></i> Diagnostic Assisté par IA</h4>
                     </div>
                     <div class="card-body">
-                        <div class="mb-3">
-                            <label class="form-label">Description de la panne</label>
-                            <textarea class="form-control" id="problemDescription" rows="4" 
-                                      placeholder="Exemple: L'ascenseur fait un bruit anormal au 3ème étage et les portes mettent du temps à se fermer..."></textarea>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Marque de l'ascenseur</label>
+                                    <select class="form-select" id="diagnosticBrand">
+                                        <option value="">Sélectionnez une marque</option>
+                                        <option value="Kone">Kone</option>
+                                        <option value="Thyssen">Thyssen</option>
+                                        <option value="Otis">Otis</option>
+                                        <option value="Schindler">Schindler</option>
+                                        <option value="Sodimas">Sodimas</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Description détaillée de la panne</label>
+                                    <textarea class="form-control" id="problemDescription" rows="5" 
+                                              placeholder="Décrivez précisément le problème rencontré, les symptômes, les bruits anormaux, etc..."></textarea>
+                                </div>
+                                
+                                <button class="btn btn-warning w-100" onclick="analyzeWithAI()">
+                                    <i class="fas fa-robot"></i> Analyser avec l'IA
+                                </button>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div id="aiAnalysisResult" class="mt-3 mt-md-0">
+                                    <div class="alert alert-info">
+                                        <h6><i class="fas fa-info-circle"></i> Comment utiliser le diagnostic IA</h6>
+                                        <p class="mb-0">Décrivez le problème en détail. L'IA analysera votre description et proposera des solutions basées sur sa base de connaissances et son apprentissage continu.</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Marque concernée</label>
-                            <select class="form-select" id="diagnosticBrand">
-                                <option value="">Choisir une marque</option>
-                                <option value="Kone">Kone</option>
-                                <option value="Thyssen">Thyssen</option>
-                                <option value="Otis">Otis</option>
-                                <option value="Schindler">Schindler</option>
-                            </select>
-                        </div>
-                        
-                        <button class="btn btn-warning w-100" onclick="analyzeWithAI()">
-                            <i class="fas fa-robot"></i> Analyser avec l'IA
-                        </button>
-                        
-                        <div id="aiResult" class="mt-4"></div>
                     </div>
                 </div>
             `;
         }
 
         function getHistoryContent() {
+            let historyHTML = '';
+            
+            if (diagnostics.length === 0) {
+                historyHTML = '<div class="alert alert-info">Aucun diagnostic dans l\'historique.</div>';
+            } else {
+                historyHTML = diagnostics.slice().reverse().map(diag => `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6>${diag.problem.substring(0, 100)}...</h6>
+                                    <p class="mb-1"><strong>Solution:</strong> ${diag.solution}</p>
+                                    <small class="text-muted">
+                                        ${diag.date} • ${diag.brand ? 'Marque: ' + diag.brand : ''}
+                                        ${diag.resolved ? '• ✅ Résolu' : '• ❌ Non résolu'}
+                                    </small>
+                                </div>
+                                <span class="badge ${diag.resolved ? 'bg-success' : 'bg-warning'}">
+                                    ${diag.resolved ? 'Résolu' : 'En cours'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
             return `
                 <div class="card">
                     <div class="card-header bg-secondary text-white">
-                        <h4><i class="fas fa-history"></i> Historique</h4>
+                        <h4><i class="fas fa-history"></i> Historique des Diagnostics</h4>
                     </div>
                     <div class="card-body">
-                        <div class="alert alert-info">
-                            <p>Vos diagnostics apparaîtront ici après analyse.</p>
-                        </div>
+                        ${historyHTML}
                     </div>
                 </div>
             `;
@@ -284,16 +603,19 @@
                             <div class="col-md-6">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h5>Utilisateurs</h5>
+                                        <h5 class="mb-0">Gestion des Utilisateurs</h5>
                                     </div>
                                     <div class="card-body">
-                                        <ul>
-                                            <li>${currentUser.name} (Admin)</li>
-                                            <li>Technicien Kone</li>
-                                            <li>Technicien Thyssen</li>
-                                        </ul>
+                                        <div class="mb-3">
+                                            <strong>Utilisateurs actuels:</strong>
+                                            <ul class="mt-2">
+                                                ${USERS.map(user => `
+                                                    <li>${user.name} (${user.email}) - <span class="badge ${user.role === 'admin' ? 'bg-danger' : 'bg-primary'}">${user.role}</span></li>
+                                                `).join('')}
+                                            </ul>
+                                        </div>
                                         <button class="btn btn-success btn-sm">
-                                            <i class="fas fa-user-plus"></i> Ajouter
+                                            <i class="fas fa-user-plus"></i> Ajouter un utilisateur
                                         </button>
                                     </div>
                                 </div>
@@ -301,12 +623,15 @@
                             <div class="col-md-6">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h5>Statistiques</h5>
+                                        <h5 class="mb-0">Statistiques IA</h5>
                                     </div>
                                     <div class="card-body">
-                                        <p><strong>IA:</strong> Opérationnelle</p>
-                                        <p><strong>Documents:</strong> Prêts</p>
-                                        <p><strong>Techniciens:</strong> 2 actifs</p>
+                                        ${window.aiEngine ? `
+                                            <p><strong>Base de connaissances:</strong> ${window.aiEngine.getStats().knowledgeBaseSize} éléments</p>
+                                            <p><strong>Précision actuelle:</strong> ${window.aiEngine.getStats().accuracyPercentage}%</p>
+                                            <p><strong>Diagnostics effectués:</strong> ${window.aiEngine.getStats().totalDiagnostics}</p>
+                                            <p><strong>Taux de réussite:</strong> ${Math.round(window.aiEngine.getStats().successfulDiagnostics / window.aiEngine.getStats().totalDiagnostics * 100)}%</p>
+                                        ` : '<p>Chargement des statistiques...</p>'}
                                     </div>
                                 </div>
                             </div>
@@ -318,69 +643,242 @@
 
         // Fonctions utilitaires
         function logout() {
-            if(confirm('Déconnexion ?')) {
-                localStorage.removeItem('currentUser');
+            if(confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
                 location.reload();
             }
         }
 
-        function analyzeWithAI() {
-            const problem = document.getElementById('problemDescription').value;
-            const brand = document.getElementById('diagnosticBrand').value;
+        function uploadDocument() {
+            const brand = document.getElementById('docBrand').value;
+            const type = document.getElementById('docType').value;
+            const fileInput = document.getElementById('fileInput');
             
-            if (!problem) {
-                alert('Veuillez décrire la panne');
+            if (!fileInput.files.length) {
+                alert('Veuillez sélectionner un fichier');
                 return;
             }
             
-            const resultDiv = document.getElementById('aiResult');
+            const file = fileInput.files[0];
+            const newDoc = {
+                id: Date.now(),
+                name: file.name,
+                brand: brand,
+                type: type,
+                date: new Date().toISOString(),
+                size: file.size
+            };
+            
+            documents.push(newDoc);
+            localStorage.setItem('ascenseurs_documents', JSON.stringify(documents));
+            
+            // Fermer le modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('uploadModal'));
+            modal.hide();
+            
+            // Recharger l'interface documents
+            showSection('documents');
+            
+            alert('✅ Document ajouté avec succès !');
+        }
+
+        async function analyzeWithAI() {
+            const brand = document.getElementById('diagnosticBrand').value;
+            const problem = document.getElementById('problemDescription').value.trim();
+            
+            if (!problem) {
+                alert('Veuillez décrire le problème');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('aiAnalysisResult');
             resultDiv.innerHTML = `
                 <div class="alert alert-info">
                     <i class="fas fa-spinner fa-spin"></i> L'IA analyse le problème...
                 </div>
             `;
             
-            // Simulation analyse IA
-            setTimeout(() => {
-                const solutions = [
-                    "Vérifiez les capteurs de porte et les guides",
-                    "Contrôlez l'alimentation électrique du groupe moteur",
-                    "Inspectez les câbles et connecteurs principaux",
-                    "Nettoyez les cellules photoélectriques de sécurité"
-                ];
+            try {
+                const analysis = await window.aiEngine.analyzeProblem(problem, brand);
                 
-                const randomSolution = solutions[Math.floor(Math.random() * solutions.length)];
+                // Enregistrer le diagnostic
+                const diagnostic = {
+                    id: Date.now(),
+                    problem: problem,
+                    solution: analysis.solution || analysis.message,
+                    brand: brand,
+                    date: new Date().toLocaleString(),
+                    resolved: false,
+                    ai_confidence: analysis.confidence
+                };
                 
+                diagnostics.push(diagnostic);
+                localStorage.setItem('ascenseurs_diagnostics', JSON.stringify(diagnostics));
+                
+                // Afficher le résultat
                 resultDiv.innerHTML = `
-                    <div class="card border-success">
-                        <div class="card-header bg-success text-white">
-                            <h5><i class="fas fa-check-circle"></i> Diagnostic IA terminé</h5>
+                    <div class="card">
+                        <div class="card-header ${analysis.success ? 'bg-success' : 'bg-warning'} text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-robot"></i> 
+                                Résultat de l'analyse IA
+                                <span class="badge bg-light text-dark float-end">${Math.round(analysis.confidence * 100)}% de confiance</span>
+                            </h5>
                         </div>
                         <div class="card-body">
-                            <p><strong>Problème analysé:</strong> ${problem.substring(0, 100)}...</p>
-                            <div class="alert alert-warning">
-                                <h6>Solution recommandée:</h6>
-                                <p class="mb-0">${randomSolution}</p>
+                            <p><strong>${analysis.message}</strong></p>
+                            
+                            ${analysis.solution ? `
+                                <div class="alert alert-success">
+                                    <h6><i class="fas fa-lightbulb"></i> Solution recommandée:</h6>
+                                    <p class="mb-0">${analysis.solution}</p>
+                                </div>
+                            ` : ''}
+                            
+                            ${analysis.recommendedSteps && analysis.recommendedSteps.length > 0 ? `
+                                <h6>Actions recommandées:</h6>
+                                <ol>
+                                    ${analysis.recommendedSteps.map(step => `<li>${step}</li>`).join('')}
+                                </ol>
+                            ` : ''}
+                            
+                            <div class="mt-3">
+                                <button class="btn btn-success me-2" onclick="markAsResolved(${diagnostic.id})">
+                                    <i class="fas fa-check"></i> Marquer comme résolu
+                                </button>
+                                <button class="btn btn-danger" onclick="markAsUnresolved(${diagnostic.id})">
+                                    <i class="fas fa-times"></i> Non résolu
+                                </button>
                             </div>
-                            <button class="btn btn-success" onclick="alert('Solution appliquée ! L\\'IA a appris de cette intervention.')">
-                                <i class="fas fa-check"></i> Marquer comme résolu
-                            </button>
                         </div>
                     </div>
                 `;
-            }, 2000);
+                
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <h6><i class="fas fa-exclamation-triangle"></i> Erreur d'analyse</h6>
+                        <p class="mb-0">L'IA n'a pas pu analyser le problème. Veuillez réessayer.</p>
+                    </div>
+                `;
+            }
         }
 
-        function uploadDocument() {
-            const brand = document.getElementById('docBrand').value;
-            const type = document.getElementById('docType').value;
-            
-            alert('Fonction d\\'upload prête ! Document ' + brand + ' - ' + type + ' sera enregistré.');
-            
-            // Fermer le modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('uploadModal'));
-            modal.hide();
+        function markAsResolved(diagnosticId) {
+            const diagnostic = diagnostics.find(d => d.id === diagnosticId);
+            if (diagnostic) {
+                diagnostic.resolved = true;
+                localStorage.setItem('ascenseurs_diagnostics', JSON.stringify(diagnostics));
+                
+                // Apprentissage de l'IA
+                if (window.aiEngine && window.simpleAI) {
+                    window.aiEngine.learnFromExperience(diagnostic.problem, diagnostic.solution, true, diagnostic.brand);
+                    window.simpleAI.learnFromSolution(diagnostic.problem, diagnostic.solution, true);
+                }
+                
+                alert('✅ Diagnostic marqué comme résolu ! L\'IA a appris de cette solution.');
+                showSection('historique');
+            }
         }
 
-        console.log('✅ Application IA Ascenseurs chargée avec correctif connexion');
+        function markAsUnresolved(diagnosticId) {
+            const solution = prompt('Quelle était la solution réelle ? L\'IA apprendra de votre réponse:');
+            if (solution) {
+                const diagnostic = diagnostics.find(d => d.id === diagnosticId);
+                if (diagnostic) {
+                    diagnostic.resolved = true;
+                    diagnostic.solution = solution;
+                    localStorage.setItem('ascenseurs_diagnostics', JSON.stringify(diagnostics));
+                    
+                    // Apprentissage de l'IA
+                    if (window.aiEngine && window.simpleAI) {
+                        window.aiEngine.learnFromExperience(diagnostic.problem, solution, true, diagnostic.brand);
+                        window.simpleAI.learnFromSolution(diagnostic.problem, solution, true);
+                    }
+                    
+                    alert('✅ Solution enregistrée ! L\'IA a appris de votre correction.');
+                    showSection('historique');
+                }
+            }
+        }
+
+        function filterDocuments(brand) {
+            // Mettre à jour les boutons actifs
+            document.querySelectorAll('#documentsContent .list-group-item').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            let filteredDocs = documents;
+            if (brand !== 'all') {
+                filteredDocs = documents.filter(doc => doc.brand === brand);
+            }
+            
+            const documentsList = document.getElementById('documentsList');
+            if (filteredDocs.length === 0) {
+                documentsList.innerHTML = '<div class="alert alert-info">Aucun document dans cette catégorie.</div>';
+            } else {
+                documentsList.innerHTML = filteredDocs.map(doc => `
+                    <div class="document-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">${doc.name}</h6>
+                                <span class="badge bg-primary">${doc.brand}</span>
+                                <span class="badge bg-secondary">${doc.type}</span>
+                                <small class="d-block text-muted mt-1">Ajouté le ${new Date(doc.date).toLocaleDateString()}</small>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteDocument(${doc.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function deleteDocument(docId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce document ?')) {
+                documents = documents.filter(doc => doc.id !== docId);
+                localStorage.setItem('ascenseurs_documents', JSON.stringify(documents));
+                showSection('documents');
+                alert('✅ Document supprimé !');
+            }
+        }
+
+        function loadInitialData() {
+            // Charger quelques documents d'exemple si vide
+            if (documents.length === 0) {
+                documents = [
+                    {
+                        id: 1,
+                        name: "Manuel Kone MonoSpace.pdf",
+                        brand: "Kone",
+                        type: "manuel_technique",
+                        date: new Date().toISOString()
+                    },
+                    {
+                        id: 2,
+                        name: "Schéma Thyssen 3300.dwg",
+                        brand: "Thyssen",
+                        type: "schema_electrique", 
+                        date: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('ascenseurs_documents', JSON.stringify(documents));
+            }
+        }
+
+        // Initialiser les tooltips Bootstrap
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        console.log('🚀 Application IA Ascenseurs initialisée !');
     </script>
+</body>
+</html>
