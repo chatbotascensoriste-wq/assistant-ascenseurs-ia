@@ -287,8 +287,10 @@ async function handleLogin() {
         currentUser = user;
         window.currentUser = user;
         showAppInterface();
+        return true;
     } else {
         alert('❌ Email ou mot de passe incorrect');
+        return false;
     }
 }
 
@@ -312,20 +314,22 @@ function showAppInterface() {
     showSection('accueil');
 }
 
-function showSection(section) {
-    if (cameraStream && section !== 'photo') {
+function showSection(sectionName) {
+    // Arrêter la caméra si on change de section
+    if (cameraStream && sectionName !== 'photo') {
         stopCamera();
     }
    
+    // Mettre à jour la navigation active
     document.querySelectorAll('.list-group-item').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.target.classList.add('active');
    
+    // Mettre à jour le contenu
     const contentArea = document.getElementById('contentArea');
     let html = '';
    
-    switch(section) {
+    switch(sectionName) {
         case 'accueil':
             html = getHomeContent();
             break;
@@ -349,6 +353,9 @@ function showSection(section) {
     }
    
     contentArea.innerHTML = html;
+    
+    // Marquer l'élément actif dans la navigation
+    event.target.classList.add('active');
 }
 
 function getHomeContent() {
@@ -593,7 +600,7 @@ async function initCamera() {
         document.getElementById('photoResult').innerHTML = `
             <div class="alert alert-danger">
                 <h6><i class="fas fa-exclamation-triangle"></i> Erreur caméra</h6>
-                <p class="mb-0">Impossible d'accéder à la caméra arrière</p>
+                <p class="mb-0">Impossible d'accéder à la caméra</p>
             </div>
         `;
     }
@@ -724,7 +731,8 @@ function addTechnicien() {
     });
 
     // Fermer le modal et recharger la section admin
-    bootstrap.Modal.getInstance(document.getElementById('addTechModal')).hide();
+    const modal = bootstrap.Modal.getInstance(document.getElementById('addTechModal'));
+    modal.hide();
     showSection('admin');
     
     alert('Technicien ajouté avec succès');
@@ -747,7 +755,8 @@ function addDocument() {
     });
 
     // Fermer le modal et recharger la section documents
-    bootstrap.Modal.getInstance(document.getElementById('addDocModal')).hide();
+    const modal = bootstrap.Modal.getInstance(document.getElementById('addDocModal'));
+    modal.hide();
     showSection('documents');
     
     alert('Document ajouté avec succès');
@@ -776,11 +785,4 @@ function logout() {
     document.getElementById('appInterface').style.display = 'none';
     document.getElementById('loginScreen').style.display = 'flex';
     document.getElementById('loginForm').reset();
-}
-
-// Fonction pour afficher/masquer le mot de passe
-function togglePassword() {
-    const passwordField = document.getElementById('password');
-    const type = passwordField.type === 'password' ? 'text' : 'password';
-    passwordField.type = type;
 }
