@@ -1,101 +1,371 @@
+/* === STYLES GÉNÉRAUX === */
 :root {
     --primary: #2c3e50;
     --secondary: #3498db;
     --success: #27ae60;
     --warning: #f39c12;
     --danger: #e74c3c;
+    --info: #17a2b8;
 }
 
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+/* === ÉCRAN DE CONNEXION === */
 .login-screen {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
+    justify-content: center;
     padding: 20px;
 }
 
 .login-card {
     background: white;
     border-radius: 15px;
-    padding: 30px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    max-width: 400px;
+    padding: 40px 30px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    max-width: 450px;
+    width: 100%;
     margin: 0 auto;
+    transition: transform 0.3s ease;
 }
 
+.login-card:hover {
+    transform: translateY(-5px);
+}
+
+/* === INTERFACE PRINCIPALE === */
 .app-interface {
     display: none;
+    min-height: 100vh;
 }
 
+/* === BADGES UTILISATEURS === */
 .admin-badge {
-    background: var(--danger);
+    background: linear-gradient(45deg, var(--danger), #c0392b);
     color: white;
-    padding: 3px 8px;
-    border-radius: 10px;
-    font-size: 0.8em;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.75em;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .tech-badge {
-    background: var(--success);
+    background: linear-gradient(45deg, var(--success), #229954);
     color: white;
-    padding: 3px 8px;
-    border-radius: 10px;
-    font-size: 0.8em;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.75em;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
+/* === FORMULAIRES === */
 .password-toggle {
     cursor: pointer;
     position: absolute;
-    right: 10px;
+    right: 12px;
     top: 50%;
     transform: translateY(-50%);
+    color: #6c757d;
+    transition: color 0.3s ease;
 }
 
+.password-toggle:hover {
+    color: var(--primary);
+}
+
+.form-control:focus {
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+/* === CAMERA === */
 .camera-container {
     position: relative;
     background: #000;
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 #cameraView {
     width: 100%;
-    height: 300px;
+    height: 350px;
     object-fit: cover;
+    display: block;
 }
 
 .camera-controls {
     position: absolute;
-    bottom: 20px;
+    bottom: 25px;
     left: 0;
     right: 0;
     text-align: center;
 }
 
+.camera-controls .btn {
+    padding: 12px 30px;
+    font-size: 1.1em;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* === DOCUMENTS === */
+.document-card {
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    background: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.document-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-color: var(--secondary);
+}
+
+.document-card h6 {
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+/* === CARTES ET ALERTES === */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    padding: 15px 20px;
+    font-weight: 600;
+}
+
+.alert {
+    border: none;
+    border-radius: 10px;
+    padding: 15px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* === BOUTONS === */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, var(--secondary), #2980b9);
+}
+
+.btn-success {
+    background: linear-gradient(45deg, var(--success), #229954);
+}
+
+.btn-warning {
+    background: linear-gradient(45deg, var(--warning), #e67e22);
+}
+
+.btn-danger {
+    background: linear-gradient(45deg, var(--danger), #c0392b);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* === NAVIGATION === */
+.list-group-item {
+    border: none;
+    padding: 15px 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-bottom: 5px;
+    border-radius: 8px !important;
+}
+
+.list-group-item:hover {
+    background-color: #e9ecef;
+    transform: translateX(5px);
+}
+
+.list-group-item.active {
+    background: linear-gradient(45deg, var(--primary), #34495e);
+    border: none;
+    box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
+}
+
+/* === PRÉVISUALISATION PHOTO === */
 .photo-preview {
     max-width: 100%;
     height: auto;
     border-radius: 10px;
-    margin-top: 10px;
+    margin-top: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    border: 3px solid white;
 }
 
-.document-card {
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 15px;
-    background: white;
-    transition: transform 0.2s;
-}
-
-.document-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
+/* === LOGO ET IMAGES === */
 .logo-image {
-    max-width: 100px;
+    max-width: 120px;
     height: auto;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    border: 3px solid white;
+}
+
+/* === STATISTIQUES === */
+.stats-card {
+    text-align: center;
+    padding: 20px;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+}
+
+.stats-card i {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+}
+
+.stats-card h5 {
+    font-size: 1.8em;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+/* === MODALS === */
+.modal-content {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    border-radius: 15px 15px 0 0;
+    background: linear-gradient(45deg, var(--primary), #34495e);
+    color: white;
+}
+
+.modal-header .btn-close {
+    filter: invert(1);
+}
+
+/* === ANIMATIONS === */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+    .login-card {
+        padding: 30px 20px;
+        margin: 10px;
+    }
+    
+    .camera-container {
+        margin: 10px 0;
+    }
+    
+    #cameraView {
+        height: 250px;
+    }
+    
+    .document-card {
+        padding: 15px;
+    }
+    
+    .stats-card {
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 576px) {
+    .card-header h4 {
+        font-size: 1.2em;
+    }
+    
+    .btn {
+        padding: 10px 15px;
+        font-size: 0.9em;
+    }
+    
+    .list-group-item {
+        padding: 12px 15px;
+        font-size: 0.9em;
+    }
+}
+
+/* === INDICATEUR CHARGEMENT IA === */
+.loading-ia {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--secondary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* === ZONES DE RÉSULTATS === */
+.result-area {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    border-left: 4px solid var(--success);
+}
+
+/* === BARRE DE PROGRESSION === */
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.progress-bar {
+    background: linear-gradient(45deg, var(--secondary), var(--success));
+    border-radius: 4px;
 }
