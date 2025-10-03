@@ -13,9 +13,9 @@
     <div class="login-screen" id="loginScreen">
         <div class="login-card">
             <div class="text-center mb-4">
-                <img src="assets/ascenseur-image.jpg" alt="Logo Ascenseurs" class="logo-image mb-3">
+                <i class="fas fa-robot fa-3x text-primary mb-3"></i>
                 <h2>Assistant IA Ascenseurs</h2>
-                <p class="text-muted">Base MongoDB Active ✅</p>
+                <p class="text-muted">Google Drive API Active ✅</p>
             </div>
            
             <form id="loginForm">
@@ -27,16 +27,6 @@
                 <div class="mb-3 position-relative">
                     <label class="form-label">Mot de passe</label>
                     <input type="password" class="form-control" id="password" placeholder="Votre mot de passe" required>
-                    <span class="password-toggle" onclick="togglePassword()">
-                        <i class="fas fa-eye"></i>
-                    </span>
-                </div>
-               
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="showPassword">
-                    <label class="form-check-label" for="showPassword">
-                        Afficher le mot de passe
-                    </label>
                 </div>
                
                 <button type="submit" class="btn btn-primary w-100 py-2">
@@ -62,7 +52,7 @@
                 </span>
                 <div class="navbar-nav ms-auto">
                     <span class="nav-text text-light me-3 d-none d-md-inline">
-                        <i class="fas fa-circle text-success"></i> En ligne
+                        <i class="fas fa-circle text-success"></i> Google Drive Connecté
                     </span>
                     <button class="btn btn-outline-light btn-sm" onclick="logout()">
                         <i class="fas fa-sign-out-alt"></i> Déconnexion
@@ -79,20 +69,20 @@
                         <div class="card-header bg-primary text-white">
                             <i class="fas fa-tachometer-alt"></i> Navigation
                         </div>
-                        <div class="list-group list-group-flush">
-                            <button class="list-group-item list-group-item-action active" onclick="showSection('accueil')">
+                        <div class="list-group list-group-flush" id="mainNav">
+                            <button class="list-group-item list-group-item-action active" data-section="accueil">
                                 <i class="fas fa-home"></i> Accueil
                             </button>
-                            <button class="list-group-item list-group-item-action" onclick="showSection('documents')">
+                            <button class="list-group-item list-group-item-action" data-section="documents">
                                 <i class="fas fa-folder"></i> Documents
                             </button>
-                            <button class="list-group-item list-group-item-action" onclick="showSection('diagnostic')">
+                            <button class="list-group-item list-group-item-action" data-section="diagnostic">
                                 <i class="fas fa-stethoscope"></i> Diagnostic
                             </button>
-                            <button class="list-group-item list-group-item-action" id="photoNavBtn" style="display:none;" onclick="showSection('photo')">
+                            <button class="list-group-item list-group-item-action" id="photoNavBtn" style="display:none;" data-section="photo">
                                 <i class="fas fa-camera"></i> Analyse Photo
                             </button>
-                            <button class="list-group-item list-group-item-action" id="adminNavBtn" style="display:none;" onclick="showSection('admin')">
+                            <button class="list-group-item list-group-item-action" id="adminNavBtn" style="display:none;" data-section="admin">
                                 <i class="fas fa-crown"></i> Administration
                             </button>
                         </div>
@@ -103,6 +93,9 @@
                         <div class="card-body text-center p-3">
                             <h6 id="userName" class="mb-1"></h6>
                             <div id="userRole"></div>
+                            <div id="driveStatus" class="mt-2">
+                                <small class="text-warning"><i class="fas fa-sync"></i> Drive non connecté</small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -110,98 +103,40 @@
                 <!-- Contenu principal -->
                 <div class="col-lg-10 col-md-9">
                     <div id="contentArea">
-                        <!-- Le contenu change ici -->
+                        <!-- Le contenu change ici dynamiquement -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modals -->
-    <div class="modal fade" id="addTechModal" tabindex="-1">
+    <!-- Modal Connexion Google Drive -->
+    <div class="modal fade" id="driveAuthModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-user-plus"></i> Nouveau Technicien</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title"><i class="fab fa-google-drive"></i> Connexion Google Drive Requise</h5>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Nom complet</label>
-                        <input type="text" class="form-control" id="newTechName" placeholder="Jean Dupont">
+                    <p>L'application nécessite un accès à Google Drive pour fonctionner correctement.</p>
+                    <div class="alert alert-info">
+                        <small><strong>Fonctionnalités :</strong> Stockage des documents techniques, accès aux manuels, sauvegarde des diagnostics</small>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" id="newTechEmail" placeholder="technicien@ascenseurs.com">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Spécialité</label>
-                        <select class="form-select" id="newTechSpecialite">
-                            <option value="Kone">Kone</option>
-                            <option value="Thyssen">Thyssen</option>
-                            <option value="Otis">Otis</option>
-                            <option value="Schindler">Schindler</option>
-                        </select>
-                    </div>
-                    <div class="mb-3 position-relative">
-                        <label class="form-label">Mot de passe</label>
-                        <input type="password" class="form-control" id="newTechPassword" placeholder="Mot de passe">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-primary" onclick="addTechnicien()">Ajouter</button>
+                    <button class="btn btn-success w-100" onclick="initGoogleDrive()">
+                        <i class="fab fa-google"></i> Se connecter à Google Drive
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="addDocModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-file-upload"></i> Nouveau Document</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Nom du document</label>
-                        <input type="text" class="form-control" id="docName" placeholder="Manuel Kone 2024">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Marque</label>
-                        <select class="form-select" id="docBrand">
-                            <option value="Kone">Kone</option>
-                            <option value="Thyssen">Thyssen</option>
-                            <option value="Otis">Otis</option>
-                            <option value="Schindler">Schindler</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Type</label>
-                        <select class="form-select" id="docType">
-                            <option value="manuel">Manuel technique</option>
-                            <option value="schema">Schéma électrique</option>
-                            <option value="guide">Guide dépannage</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Lien du document</label>
-                        <input type="url" class="form-control" id="docUrl" placeholder="https://drive.google.com/...">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-primary" onclick="addDocument()">Ajouter</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- API Google Drive -->
+    <script src="https://apis.google.com/js/api.js"></script>
     <script src="config.js"></script>
+    <script src="google-drive-service.js"></script>
     <script src="ia-engine.js"></script>
-    <script src="mongodb-service.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
