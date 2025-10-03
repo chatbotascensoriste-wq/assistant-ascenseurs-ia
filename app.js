@@ -123,53 +123,44 @@ class DatabaseManager {
 class IAEngine {
     constructor() {
         this.knowledgeBase = [];
-        this.init();
-    }
-
-    async init() {
-        console.log("🧠 Moteur IA initialisé");
+        this.isRealAI = window.trueIA ? true : false;
     }
 
     async analyzeProblem(problem, brand = null) {
-        console.log(`🔍 IA analyse: "${problem}" ${brand ? `(Marque: ${brand})` : ''}`);
+        console.log(`🔍 ${this.isRealAI ? 'IA Réelle' : 'IA Expert'} analyse: "${problem}"`);
         
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        if (this.isRealAI && window.trueIA) {
+            try {
+                return await window.trueIA.analyzeProblem(problem, brand);
+            } catch (error) {
+                console.log("❌ IA Réelle échouée, mode expert activé");
+            }
+        }
         
-        const solutions = [
-            "Vérifiez les capteurs de sécurité et les fins de course",
-            "Contrôlez l'alimentation électrique du groupe moteur",
-            "Inspectez les câbles et connecteurs principaux",
-            "Nettoyez les cellules photoélectriques de porte",
-            "Vérifiez la programmation du contrôleur principal"
-        ];
-        
-        return {
-            success: true,
-            solution: solutions[Math.floor(Math.random() * solutions.length)],
-            confidence: 0.85,
-            recommendedSteps: [
-                "Couper l'alimentation générale",
-                "Vérifier les voyants du tableau de commande",
-                "Contrôler les tensions électriques",
-                "Redémarrer le système"
-            ]
-        };
+        // Mode expert fallback
+        return this.getExpertSolution(problem, brand);
     }
 
     async analyzePhoto() {
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        if (this.isRealAI && window.trueIA) {
+            try {
+                return await window.trueIA.analyzePhoto();
+            } catch (error) {
+                console.log("❌ Analyse photo IA échouée");
+            }
+        }
         
-        const analyses = [
-            "🔄 Analyse des composants : armoire de commande principale détectée",
-            "📊 Identification : système Kone MonoSpace reconnu",
-            "🔍 Détection câblage : vérifiez les connexions du module de puissance",
-            "⚡ Analyse électrique : contrôlez les fusibles et relais"
-        ];
-        
-        return analyses[Math.floor(Math.random() * analyses.length)];
+        return this.getExpertImageAnalysis();
+    }
+
+    getExpertSolution(problem = "", brand = null) {
+        // ... (gardez votre code expert existant)
+    }
+
+    getExpertImageAnalysis() {
+        // ... (gardez votre code expert existant)
     }
 }
-
 // === VARIABLES GLOBALES ===
 const dbManager = new DatabaseManager();
 const iaEngine = new IAEngine();
