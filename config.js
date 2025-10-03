@@ -9,25 +9,24 @@ const MONGODB_CONFIG = {
     }
 };
 
+// === CONFIGURATION IA HUGGING FACE ===
+const IA_CONFIG = {
+    API_KEY: "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",
+    MODELS: {
+        TEXT: "microsoft/DialoGPT-medium",
+        IMAGE: "google/vit-base-patch16-224",
+        DOCUMENT: "microsoft/layoutlm-base-uncased"
+    },
+    BASE_URL: "https://api-inference.huggingface.co/models"
+};
+
 // === CONFIGURATION APPLICATION ===
 const APP_CONFIG = {
     NAME: "Assistant IA Ascenseurs Pro",
-    VERSION: "3.0",
-    AUTHOR: "Votre Entreprise",
+    VERSION: "4.0",
     IA_ACTIVE: true,
     MONGODB_ACTIVE: true,
-    
-    // Marques supportées
-    BRANDS: ["Kone", "Thyssen", "Otis", "Schindler", "Sodimas"],
-    
-    // Types de documents
-    DOC_TYPES: [
-        "manuel_technique",
-        "schema_electrique", 
-        "guide_depannage",
-        "notice_installation",
-        "plan_mecanique"
-    ]
+    REAL_IA: true
 };
 
-console.log("✅ Configuration MongoDB chargée - Cluster connecté");
+console.log("✅ Configuration IA Réelle chargée !");
